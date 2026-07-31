@@ -162,6 +162,7 @@ checksum = "sha256:d4c883f6a41f064e587de948645d9128d282b12c3a42eac36920eaf1d6316
 url = "https://github.com/jdx/aube/releases/download/v1.32.0/aube-v1.32.0-aarch64-apple-darwin.tar.gz"
 url_api = "https://api.github.com/repos/jdx/aube/releases/assets/485361741"
 provenance = "github-attestations"
+provenance_verified = true
 
 [tools.aube."platforms.windows-x64"]
 checksum = "sha256:94fc5c07b56da989f1fafbee24da285ea56451fbb27d9bca27dc558668af4121"
@@ -358,6 +359,7 @@ checksum = "sha256:668683480d8b8d62de9616c3a2258f802daf6ce3440d2fa6cf1f7d72eecad
 url = "https://github.com/jdx/communique/releases/download/v1.2.3/communique-aarch64-apple-darwin.tar.gz"
 url_api = "https://api.github.com/repos/jdx/communique/releases/assets/477186196"
 provenance = "github-attestations"
+provenance_verified = true
 
 [tools.communique."platforms.windows-x64"]
 checksum = "sha256:63f2370f9c6ff97b31f9be266d8860dd65dce0aafb269c492de7cdbb9d29d782"
@@ -524,6 +526,7 @@ checksum = "sha256:22403041e281365efd5efcd041ecf20dd364c21654f4745f26731d7b77e1d
 url = "https://github.com/jdx/tak/releases/download/v0.0.5/tak-aarch64-apple-darwin.tar.gz"
 url_api = "https://api.github.com/repos/jdx/tak/releases/assets/491688659"
 provenance = "github-attestations"
+provenance_verified = true
 
 [tools."github:jdx/tak"."platforms.windows-x64"]
 checksum = "sha256:990f674bc67dd6335f817f9c201cdb99f68d4560034c46d57f3c8794460479da"

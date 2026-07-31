@@ -3,6 +3,9 @@
 use console::Key;
 use std::io;
 
+const CTRL_N: char = '\x0e';
+const CTRL_P: char = '\x10';
+
 use super::undo::UndoAction;
 use super::{ConfigResult, InteractiveConfig};
 use crate::cursor::{AddButtonKind, CursorTarget};
@@ -37,10 +40,10 @@ impl InteractiveConfig {
     ) -> io::Result<Option<ConfigResult>> {
         match key {
             // Navigation
-            Key::ArrowUp | Key::Char('k') => {
+            Key::ArrowUp | Key::Char('k') | Key::Char(CTRL_P) => {
                 self.cursor.up(&self.doc);
             }
-            Key::ArrowDown | Key::Char('j') => {
+            Key::ArrowDown | Key::Char('j') | Key::Char(CTRL_N) => {
                 self.cursor.down(&self.doc);
             }
             Key::ArrowLeft | Key::Char('h') => {
@@ -262,11 +265,11 @@ impl InteractiveConfig {
                         self.mode = Mode::Navigate;
                     }
                 }
-                Key::ArrowUp | Key::Char('k') => {
+                Key::ArrowUp | Key::Char('k') | Key::Char(CTRL_P) => {
                     picker.move_up();
                     self.mode = Mode::Picker(kind, Box::new(picker));
                 }
-                Key::ArrowDown | Key::Char('j') => {
+                Key::ArrowDown | Key::Char('j') | Key::Char(CTRL_N) => {
                     picker.move_down();
                     self.mode = Mode::Picker(kind, Box::new(picker));
                 }
@@ -743,5 +746,49 @@ impl InteractiveConfig {
             }
         }
         Ok(None)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::picker::{PickerItem, PickerState};
+    use std::path::PathBuf;
+
+    fn block_on<F: Future>(future: F) -> F::Output {
+        tokio::runtime::Builder::new_current_thread()
+            .build()
+            .unwrap()
+            .block_on(future)
+    }
+
+    #[test]
+    fn ctrl_n_and_ctrl_p_navigate_menu() {
+        let mut editor = InteractiveConfig::new(PathBuf::from("mise.toml"));
+
+        block_on(editor.handle_navigate_key(Key::Char(CTRL_N))).unwrap();
+        assert_eq!(editor.cursor.index(), 1);
+
+        block_on(editor.handle_navigate_key(Key::Char(CTRL_P))).unwrap();
+        assert_eq!(editor.cursor.index(), 0);
+    }
+
+    #[test]
+    fn ctrl_n_and_ctrl_p_navigate_picker() {
+        let mut editor = InteractiveConfig::new(PathBuf::from("mise.toml"));
+        let picker = PickerState::new(vec![PickerItem::new("first"), PickerItem::new("second")]);
+        editor.mode = Mode::Picker(PickerKind::Section, Box::new(picker));
+
+        block_on(editor.handle_picker_key(Key::Char(CTRL_N))).unwrap();
+        let Mode::Picker(_, picker) = &editor.mode else {
+            panic!("expected picker mode");
+        };
+        assert_eq!(picker.selected().unwrap().name, "second");
+
+        block_on(editor.handle_picker_key(Key::Char(CTRL_P))).unwrap();
+        let Mode::Picker(_, picker) = &editor.mode else {
+            panic!("expected picker mode");
+        };
+        assert_eq!(picker.selected().unwrap().name, "first");
     }
 }
